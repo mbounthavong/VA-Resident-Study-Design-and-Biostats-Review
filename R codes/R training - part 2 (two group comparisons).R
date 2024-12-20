@@ -78,6 +78,8 @@ hist(diabetes.data$SkinThickness[diabetes.data$High.thickness=="Low thickness"])
 
 
 ### By Groups
+table(diabetes.data$High.Pregnancy)
+
 ### High.Pregnancy = 0 (<= 3.5 pregnancies)
 ### High.Pregnancy = 1 (> 3.5 pregnancies)
 describeBy(diabetes.data$BMI, group = diabetes.data$High.Pregnancy)
@@ -92,18 +94,20 @@ describeBy(diabetes.data, group = diabetes.data$High.Pregnancy)
 ## Statistical tests
 ###############################
 
+#### Let's compare BMI between the High.Pregnancy categories
+
 #### View distributions
-hist(diabetes.data$Pregnancies)
+hist(diabetes.data$BMI)
 
 #### Method #1
 par(mfrow = c(1, 2))
-hist(diabetes.data$Pregnancies[diabetes.data$Outcome==0])
-hist(diabetes.data$Pregnancies[diabetes.data$Outcome==1])
+hist(diabetes.data$BMI[diabetes.data$High.Pregnancy=="Low-preg"])
+hist(diabetes.data$BMI[diabetes.data$High.Pregnancy=="High-preg"])
 
 #### Method #2
-ggplot(diabetes.data, aes(x = Pregnancies)) +
+ggplot(diabetes.data, aes(x = BMI)) +
   geom_histogram(fill = "white", colour = "black") +
-  facet_grid(Outcome ~ .)
+  facet_grid(High.Pregnancy ~ .)
 
 
 
@@ -114,14 +118,25 @@ t.test(diabetes.data$Pregnancies, mu = 3.5)
 
 
 #### Parametric two-group comparison - Independent t test
-# H0: The mean number of pregnancies in the group with the outcome is not 
-#     different from the mean number of pregnancies in the group with 
-#     no Outcomes (H0: mu1 = mu2)
-# Ha: The mean number of pregnancies in the group with the outcome is 
-#     different from the mean number of pregnancies in the group with 
-#     no Outcomes (Ha: mu1 != mu2)
-t.test(diabetes.data$Pregnancies ~ diabetes.data$Outcome, alternative = "two.sided", mu = 0, paired = FALSE, var.equal = FALSE, conf.level = 0.95)
+# H0: The mean BMI in the group with the High Pregnancy is not 
+#     different from the mean BMI in the group with 
+#     Low Pregnancy (H0: mu1 = mu2)
+# Ha: The mean BMI in the group with the High Pregnancy is  
+#     different from the mean BMI in the group with 
+#     Low Pregnancy (Ha: mu1 != mu2)
+t.test(diabetes.data$BMI ~ diabetes.data$High.Pregnancy, alternative = "two.sided", mu = 0, paired = FALSE, var.equal = FALSE, conf.level = 0.95)
 t.test(diabetes.data$Pregnancies ~ diabetes.data$Outcome)
+
+
+#### Let's compare the mean age between the two groups:
+describeBy(diabetes.data$Age, group = diabetes.data$High.Pregnancy)
+
+par(mfrow = c(1, 2))
+hist(diabetes.data$Age[diabetes.data$High.Pregnancy=="Low-preg"])
+hist(diabetes.data$Age[diabetes.data$High.Pregnancy=="High-preg"])
+
+t.test(diabetes.data$Age ~ diabetes.data$High.Pregnancy, alternative = "two.sided", mu = 0, paired = FALSE, var.equal = FALSE, conf.level = 0.95)
+
 
 attach(diabetes.data)          ### You can attached the data 
 t.test(Outcome, Pregnancies)   ### No need to preface each var with data set
