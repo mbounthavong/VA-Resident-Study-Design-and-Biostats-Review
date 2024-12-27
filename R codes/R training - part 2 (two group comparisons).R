@@ -5,7 +5,7 @@
 # R Version:    4.2.3 "Shortstop Beagle"
 # Category:     Biostatistics
 # Date:         07 August 2021
-# Updated:      20 December 2024
+# Updated:      27 December 2024
 # Updated by:   Mark Bounthavong
 ################################################################################
 
@@ -59,8 +59,8 @@ diabetes.data$High.Pregnancy
 
 #### Look at the histogram distributions between High and Low pregnancies
 par(mfrow = c(1, 2))  ### Build the matrix template
-hist(diabetes.data$Pregnancies[diabetes.data$High.Pregnancy=="Low-preg"])   ## hist for Low-preg group
-hist(diabetes.data$Pregnancies[diabetes.data$High.Pregnancy=="High-preg"])  ## hist for High-preg group
+hist(diabetes.data$Pregnancies[diabetes.data$High.Pregnancy==0])   ## hist for Low-preg group
+hist(diabetes.data$Pregnancies[diabetes.data$High.Pregnancy==1])  ## hist for High-preg group
 
 #### Example 1: Create a variable called High thickness (defined as >= 25 mm):
 diabetes.data$High.thickness <- ifelse(diabetes.data$SkinThickness >= 25, c("High thickness"), c("Low thickness"))
@@ -101,8 +101,8 @@ hist(diabetes.data$BMI)
 
 #### Method #1
 par(mfrow = c(1, 2))
-hist(diabetes.data$BMI[diabetes.data$High.Pregnancy=="Low-preg"])
-hist(diabetes.data$BMI[diabetes.data$High.Pregnancy=="High-preg"])
+hist(diabetes.data$BMI[diabetes.data$High.Pregnancy==0])
+hist(diabetes.data$BMI[diabetes.data$High.Pregnancy==1])
 
 #### Method #2
 ggplot(diabetes.data, aes(x = BMI)) +
@@ -125,37 +125,38 @@ t.test(diabetes.data$Pregnancies, mu = 3.5)
 #     different from the mean BMI in the group with 
 #     Low Pregnancy (Ha: mu1 != mu2)
 t.test(diabetes.data$BMI ~ diabetes.data$High.Pregnancy, alternative = "two.sided", mu = 0, paired = FALSE, var.equal = FALSE, conf.level = 0.95)
-t.test(diabetes.data$Pregnancies ~ diabetes.data$Outcome)
+t.test(diabetes.data$BMI ~ diabetes.data$High.Pregnancy)
 
 
 #### Let's compare the mean age between the two groups:
 describeBy(diabetes.data$Age, group = diabetes.data$High.Pregnancy)
 
 par(mfrow = c(1, 2))
-hist(diabetes.data$Age[diabetes.data$High.Pregnancy=="Low-preg"])
-hist(diabetes.data$Age[diabetes.data$High.Pregnancy=="High-preg"])
+hist(diabetes.data$Age[diabetes.data$High.Pregnancy==0])
+hist(diabetes.data$Age[diabetes.data$High.Pregnancy==1])
 
 t.test(diabetes.data$Age ~ diabetes.data$High.Pregnancy, alternative = "two.sided", mu = 0, paired = FALSE, var.equal = FALSE, conf.level = 0.95)
 
 
 attach(diabetes.data)          ### You can attached the data 
-t.test(Outcome, Pregnancies)   ### No need to preface each var with data set
+t.test(BMI ~ High.Pregnancy)   ### No need to preface each var with data set
 detach(diabetes.data)
 
+
 #### Non-parametric two-group comparison - Mann-Whitney U test
-wilcox.test(diabetes.data$Outcome, diabetes.data$Pregnancies)
+wilcox.test(diabetes.data$BMI ~ diabetes.data$High.Pregnancy)
 
 
 #### Test for normality (Kolmogorov-Smirnoff test)
 ## HO: There is no difference in the distribution of the variable from a normal distribution
 ## Ha: There is a difference in the distribution of the variable from a normal distribution
-ks.test(diabetes.data$Pregnancies, pnorm)
-hist(diabetes.data$Pregnancies)
+ks.test(diabetes.data$BMI, pnorm)
+hist(diabetes.data$BMI)
 
 #### Test for normality (Shapiro-Wilk's test)
-shapiro.test(diabetes.data$Pregnancies)
-shapiro.test(diabetes.data$Pregnancies[diabetes.data$Outcome==0])
-shapiro.test(diabetes.data$Pregnancies[diabetes.data$Outcome==1])
+shapiro.test(diabetes.data$BMI)
+shapiro.test(diabetes.data$BMI[diabetes.data$High.Pregnancy==0])
+shapiro.test(diabetes.data$BMI[diabetes.data$High.Pregnancy==1])
 
 #### Example 1: Is glucose normally distributed?
 hist(diabetes.data$Glucose)
@@ -184,27 +185,29 @@ shapiro.test(diabetes.data$SkinThickness)
 ######################################
 
 #### 2 x 2 contingency table
-table(diabetes.data$High.Pregnancy, diabetes.data$Outcome)
+table(diabetes.data$High.thickness, diabetes.data$High.Pregnancy)
+table1 <- table(diabetes.data$High.thickness, diabetes.data$High.Pregnancy)
+prop.table(table1, margin = 2)
 
 #### Chi square test -- Method #1
 # H0: The number of high pregnancies in the group with the Outcome is
 #     not different from the group without the Outcome (H0: n1 = n2)
 # Ha: The number of high pregnancies in the group with the Outcome is
 #     different from the group without the Outcome (Ha: n1 != n2)
-chisq.test(diabetes.data$High.Pregnancy, diabetes.data$Outcome)
+chisq.test(diabetes.data$High.thickness, diabetes.data$High.Pregnancy, correct = FALSE)
 
 #### Chi square test -- Method #2
 ### install.packages("gmodels") ### Code used to install the gmodels package
 library("gmodels")
 
-CrossTable(diabetes.data$High.Pregnancy, diabetes.data$Outcome, chisq = TRUE, missing.include = TRUE)
+CrossTable(diabetes.data$High.thickness, diabetes.data$High.Pregnancy, chisq = TRUE, missing.include = TRUE)
 
 
 #### Fisher's exact test
 # When there are cells with < 5 observations or when the total observations
 # is less than 20; these are just general rules. Users should apply these
 # at their discretion.
-fisher.test(diabetes.data$High.Pregnancy, diabetes.data$Outcome)
+fisher.test(diabetes.data$High.thickness, diabetes.data$High.Pregnancy)
 
 
 
