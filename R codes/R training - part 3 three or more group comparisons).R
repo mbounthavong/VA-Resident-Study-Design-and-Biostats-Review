@@ -4,23 +4,23 @@
 # Output:       R 
 # Category:     Biostatistics
 # Date:         29 August 2021
-# Updated:      18 November 2022
+# Updated:      10 January 2025
 # Updated by:   Mark Bounthavong
 ################################################################################
 
-# This tutorial will introduce students to multigroup comparisons using
+# This tutorial will introduce students to multi-group comparisons using
 # one-way Analysis of Variance (ANOVA)
 
 ## Clear environment
 rm(list = ls())
 
 
-## Set the working directory 
-#### For Mac:
-setwd("/Users/mbounthavong/Dropbox/UCSD Folder/Courses/R training/Data/")
-
-#### For Windows:
-setwd("C:\\Users\\mbounthavong\\Dropbox\\UCSD Folder\\Courses\\R training\\Data")
+###############################
+## Import file from GitHub site
+###############################
+urlfile = "https://raw.githubusercontent.com/mbounthavong/VA-Resident-Study-Design-and-Biostats-Review/refs/heads/main/Data/diabetes.csv"
+diabetes.data <- read.csv(url(urlfile))
+head(diabetes.data)
 
 
 ## Import file
@@ -33,8 +33,10 @@ diabetes.data
 ###############################
 ## Libraries
 ###############################
-library("ggplot2")
-library("psych")
+if (!require("pacman")) install.packages("pacman"); library("pacman")
+p_load("ggplot2", 
+       "psych", 
+       "tidyverse")
 
 ###############################
 ## Descriptive analysis
